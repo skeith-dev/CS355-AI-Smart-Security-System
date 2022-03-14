@@ -3,7 +3,6 @@ const express = require('express');
 const path = require('path');
 const ws = require('ws');
 const mysql = require('mysql');
-const { error } = require('console');
 
 //*****//*****//*****//*****//*****//*****//*****//*****//*****//*****//*****//*****//
 //*****//       imports ▲ ▲ ▲        web sockets setup ▼ ▼ ▼
