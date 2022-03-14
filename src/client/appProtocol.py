@@ -11,7 +11,7 @@ class AppProtocol(WebSocketClientProtocol):
         self.factory.resetDelay()
 
     def onOpen(self):
-        print("Confirming connection...")
+        print("Connection is open...")
 
         message = {"action": "pi_online", "payload": {"id": "tabvn", "secret": "key"}}
         self.sendMessage(json.dumps(message).encode('utf8'))
