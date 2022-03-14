@@ -26,14 +26,15 @@ const db = mysql.createConnection({
 
 });
 
-db.connect((err) => {
+//temporarily disabled; waiting for fix from CS Admin
+/*db.connect((err) => {
 
     if(err) {
         throw err;
     }
     console.log('Successfully connected to database!')
 
-});
+});*/
 
 //*****//*****//*****//*****//*****//*****//*****//*****//*****//*****//*****//*****//
 //*****//       database connection setup ▲ ▲ ▲           web server setup ▼ ▼ ▼
