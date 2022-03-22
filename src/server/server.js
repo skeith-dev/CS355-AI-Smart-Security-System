@@ -2,7 +2,7 @@ const http = require('http');
 const express = require('express');
 const path = require('path');
 const ws = require('ws');
-const mysql = require('mysql');
+const mysql = require('mysql2');
 
 //*****//*****//*****//*****//*****//*****//*****//*****//*****//*****//*****//*****//
 //*****//       imports ▲ ▲ ▲        web sockets setup ▼ ▼ ▼
@@ -20,21 +20,20 @@ socketServer.on('connection', socket => {
 const db = mysql.createConnection({
 
     host: 'alfred.cs.uwec.edu',
-    user: 'keithse2556',
+    user: 'KEITHSE2556',
     password: 'WYQ5S334',
-    database: 'keithse2556'
+    database: 'KEITHSE2556'
 
 });
 
-//temporarily disabled; waiting for fix from CS Admin
-/*db.connect((err) => {
+db.connect((err) => {
 
     if(err) {
         throw err;
     }
     console.log('Successfully connected to database!')
 
-});*/
+});
 
 //*****//*****//*****//*****//*****//*****//*****//*****//*****//*****//*****//*****//
 //*****//       database connection setup ▲ ▲ ▲           web server setup ▼ ▼ ▼
