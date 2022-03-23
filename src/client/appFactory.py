@@ -10,9 +10,9 @@ class AppFactory(WebSocketClientFactory, ReconnectingClientFactory):
 
     # # # functions # # #
     def clientConnectionFailed(self, connector, reason):
-        print("Failed to connect to server:\n{0}".format(reason))
+        print("\nFailed to connect to server:\n{0}".format(reason))
         self.retry(connector)
 
     def clientConnectionLost(self, connector, reason):
-        print("Connection lost, attempting to reconnect...\n{0}".format(reason))
+        print("\nConnection lost, attempting to reconnect...\n{0}".format(reason))
         self.retry(connector)
