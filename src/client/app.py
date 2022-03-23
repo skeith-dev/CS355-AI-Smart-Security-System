@@ -32,9 +32,9 @@ class App:
 
         if is_bool:
             if streaming_process is None:
-                ffmpeg_command = 'ffmpeg -re -i /Users/toan/Tutorials/stream/video.mkv -c:v libx264 -preset veryfast -maxrate 3000k -bufsize 6000k -pix_fmt yuv420p -g 50 -c:a aac -b:a 160k -ac 2 -ar 44100 -f flv rtmp://localhost/live/tabvn'
+                stream_command = 'ffmpeg -re -i /Users/spencerkeith/Desktop/School/Spring 2022/CS 355/CS-355-AI-Smart-Security-System/src/client/test1.mkv -c:v libx264 -preset veryfast -maxrate 3000k -bufsize 6000k -pix_fmt yuv420p -g 50 -c:a aac -b:a 160k -ac 2 -ar 44100 -f flv rtmp://localhost/live/keithse2556'
 
-                streaming_process = subprocess.Popen(ffmpeg_command, shell=True, stdin=subprocess.PIPE)
+                streaming_process = subprocess.Popen(stream_command, shell=True, stdin=subprocess.PIPE)
             else:
                 print("\nStreaming already in progress")
 

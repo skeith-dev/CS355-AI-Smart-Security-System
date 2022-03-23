@@ -52,17 +52,23 @@ db.connect((err) => {
 const app = express();
 const port = process.env.PORT || 8080;
 
+
 //main (default) website path
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, '/index.html'));
+    res.sendFile(path.join(__dirname, 'public/views/index.html'));
 });
 
+//user livestream website path
+app.get('/live/keithse2556', (req, res) => {
+    res.sendFile(path.join(__dirname, '/public/views/live-cam.html'))
+});
 
 
 //enable server listening
 const server = app.listen(port, function() {
     console.log('Server started at localhost:' + port);
 });
+
 
 //enable socket server for Raspberry Pi connection
 server.on('upgrade', (request, socket, head) => {
