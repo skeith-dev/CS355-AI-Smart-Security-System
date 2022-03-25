@@ -2,7 +2,7 @@ from appFactory import AppFactory
 
 
 # # # global fields # # #
-ipAddress = "127.0.0.1"  # IP address of server to connect to
+ipAddress = "localhost"  # IP address of server to connect to
 port = 8080  # port number of server to connect to
 streaming_process = None
 
