@@ -7,43 +7,19 @@
         <title>Live Camera</title>
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <style>
-            body {
-                background-color: black;
-    
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                align-items: stretch;   
-            }
-            video {
-                width: 100%;
-                height: 100%;
-            }
-        </style>
     </head>
 
-    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-
     <body>
-        <video id="live-video" autoplay="true" controls="controls"></video>
+        <img id="image">
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.4.1/socket.io.js"></script>
         <script>
-            if(Hls.isSupported()) {
-                var video = document.getElementById('live-video');
-                var hls = new Hls();
-
-                // bind them together
-                hls.attachMedia(video);
-
-                // MEDIA_ATTACHED event is fired by hls object once MediaSource is ready
-                hls.on(Hls.Events.MEDIA_ATTACHED, function () {
-                    console.log('Video and hls.js bound successfully!');
-                    hls.loadSource("http://localhost/live/keithse2556/test1.m3u8");    //FIX LATER
-                    hls.on(Hls.Events.MANIFEST_PARSED, function(event, data) {
-                        console.log("Manifest loaded, found " + data.levels.length + " quality level");
-                    });
-                });
-            }
+            //const socket = io.connect('http://localhost:5000');
+            var socket = io.connect("localhost:5000", {transports: ['websocket']});
+            socket.on('image', (image) => {
+                const imageElement = document.getElementById('image');
+                imageElement.src = `data:image/jpeg;base64,${image}`;
+            })
         </script>
     </body>
 </html>

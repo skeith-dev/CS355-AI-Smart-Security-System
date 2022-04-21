@@ -1,9 +1,10 @@
-const http = require('http');
-const express = require('express');
-const path = require('path');
-const ws = require('ws');
+const app = require('express')();
+const http = require('http').createServer(app);
+const io = require('socket.io')(http);
+const fs = require('fs');
 const mysql = require('mysql2');
 const { unescape, escape } = require('querystring');
+const path = require('path');
 
 
 //*****//*****//*****//*****//*****//*****//*****//*****//*****//*****//*****//*****//
@@ -11,11 +12,17 @@ const { unescape, escape } = require('querystring');
 //*****//*****//*****//*****//*****//*****//*****//*****//*****//*****//*****//*****//
 
 
-const socketServer = new ws.Server({ noServer: true });
+//functions when client is connected
+io.on('connection', function (socket) {
 
-socketServer.on('connection', socket => {
-    socket.on('message', message => console.log(decodeUTF8(message)));
-    socket.send( JSON.stringify( {action: 'stream', payload: true} ) );  //FIX LATER, MESSAGE IS CURRENTLY STATIC
+    //when receiving message 'data'...
+    socket.on('data', function (data) {
+        console.log(data);
+        let base64Data = data.toString()
+        console.log(base64Data.substring(0, 100) + "...");
+        io.emit('image', base64Data);
+    });
+
 });
 
 
@@ -24,6 +31,7 @@ socketServer.on('connection', socket => {
 //*****//*****//*****//*****//*****//*****//*****//*****//*****//*****//*****//*****//
 
 
+//create MySQL connection with credentials
 const db = mysql.createConnection({
 
     host: 'alfred.cs.uwec.edu',
@@ -33,24 +41,20 @@ const db = mysql.createConnection({
 
 });
 
+//connect to database
 db.connect((err) => {
 
     if(err) {
         throw err;
     }
-    console.log('Successfully connected to database!')
+    console.log('Successfully connected to database!');
 
 });
 
 
 //*****//*****//*****//*****//*****//*****//*****//*****//*****//*****//*****//*****//
-//*****//       database connection setup ▲ ▲ ▲           web server setup ▼ ▼ ▼
+//*****//       database connection setup ▲ ▲ ▲           paths specification ▼ ▼ ▼
 //*****//*****//*****//*****//*****//*****//*****//*****//*****//*****//*****//*****//
-
-
-//declare Express app, specify port
-const app = express();
-const port = process.env.PORT || 8080;
 
 
 //main (default) website path
@@ -60,21 +64,11 @@ app.get('/', (req, res) => {
 
 //user livestream website path
 app.get('/live/keithse2556', (req, res) => {
-    res.sendFile(path.join(__dirname, '/public/views/live-cam.html'))
+    res.sendFile(path.join(__dirname, 'public/views/live-cam.html'))
 });
 
-
-//enable server listening
-const server = app.listen(port, function() {
-    console.log('Server started at localhost:' + port);
-});
-
-
-//enable socket server for Raspberry Pi connection
-server.on('upgrade', (request, socket, head) => {
-    socketServer.handleUpgrade(request, socket, head, socket => {
-        socketServer.emit('connection', socket, request);
-    })
+app.get('/getImg', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public/storage/out.png'))
 });
 
 
@@ -90,3 +84,18 @@ function encodeUTF8(message) {
 function decodeUTF8(message) {
     return decodeURIComponent(escape(message));
 }
+
+
+//*****//*****//*****//*****//*****//*****//*****//*****//*****//*****//*****//*****//
+//*****//       UTF-8 encode/decode functions ▲ ▲ ▲       run app ▼ ▼ ▼
+//*****//*****//*****//*****//*****//*****//*****//*****//*****//*****//*****//*****//
+
+
+//declare Express app, get address, specify port
+const address = 'localhost';
+const port = 5000;
+
+//run app on address:port
+http.listen(port, function () {
+    console.log('Listening on ' + address + ':' + port);
+})
