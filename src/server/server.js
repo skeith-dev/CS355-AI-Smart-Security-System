@@ -15,6 +15,8 @@ const path = require('path');
 //functions when client is connected
 io.on('connection', function (socket) {
 
+    io.emit('start_stream');
+
     //when receiving message 'data'...
     socket.on('data', function (data) {
         console.log(data);
@@ -63,12 +65,8 @@ app.get('/', (req, res) => {
 });
 
 //user livestream website path
-app.get('/live/keithse2556', (req, res) => {
+app.get('/live', (req, res) => {
     res.sendFile(path.join(__dirname, 'public/views/live-cam.html'))
-});
-
-app.get('/getImg', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public/storage/out.png'))
 });
 
 

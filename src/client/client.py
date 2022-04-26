@@ -1,44 +1,53 @@
 import socketio
-import cv2
 import time
-import base64
+from camera import Camera
 
 
-client_socket = socketio.Client()
+do_stream = False
+do_store = False
+
+client_socket = socketio.Client(logger=True)
 url = 'http://localhost:5000/'
 
 
-@client_socket.event
-def connect():
-    print('Connected to', url)
+@client_socket.on('start_stream')
+def start_stream():
+    global do_stream
+    print('Start stream...')
+    do_stream = True
 
 
-@client_socket.event
-def connect_error():
-    print('Connection failed')
+@client_socket.on('stop_stream')
+def stop_stream():
+    global do_stream
+    print('Stop stream...')
+    do_stream = False
 
 
-@client_socket.event
-def message(data):
-    print('I received a message:', data)
+@client_socket.on('start_store')
+def start_store():
+    global do_store
+    print('Start storing...')
+    do_store = True
+
+
+@client_socket.on('stop_store')
+def stop_store():
+    global do_store
+    print('Stop storing...')
+    do_store = False
 
 
 client_socket.connect(url)
-
-cap = cv2.VideoCapture(0)
-cap.set(3, 320)
-cap.set(4, 240)
-
-img_counter = 0
-
-encode_param = [int(cv2.IMWRITE_JPEG_QUALITY), 90]
+cam = Camera(0)
 
 while True:
-    ret, frame = cap.read()
-    result, frame = cv2.imencode('.jpg', frame)
-    data = base64.b64encode(frame)  # convert to base64 format
-    print('Sending frame #', img_counter)
-    client_socket.emit('data', data)
+    if do_stream or do_store:
+        cam.capture_frame()
+    if do_stream:
+        if cam.motion_detector():
+            cam.send_frame(client_socket)
+    if do_store:
+        cam.store_frame()
 
-    img_counter += 1
     time.sleep(1)
