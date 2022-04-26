@@ -1,0 +1,61 @@
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" contents="width=device-width, initial-scale=1.0" />
+    <title>Log In and Registration</title>
+    <link rel="stylesheet" href="login.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;600;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="container">
+      <div class="card">
+        <div class="inner-box" id="card">
+          <div class="card-front">
+            <h3>Register</h3>
+            <form>
+              <input
+                type="text"
+                class="input-box"
+                placeholder="Enter Your Name"
+                required
+              />
+              <input
+                type="email"
+                class="input-box"
+                placeholder="Enter Email Address"
+                required
+              />
+              <input
+                type="password"
+                class="input-box"
+                placeholder="Enter Password"
+                required
+              />
+              <button type="Submit" class="submit-btn">Submit</button>
+              <input type="checkbox" /><span>Remember Me</span>
+            </form>
+            <button type="button" class="btn" onclick="myFunction()">
+              I Have An Account
+            </button>
+            <a href="">Forgot Password</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      var card = document.getElementById("card");
+
+      function myFunction() {
+        window.location.href = "login.html";
+        }
+   
+    </script>
+  </body>
+</html>
