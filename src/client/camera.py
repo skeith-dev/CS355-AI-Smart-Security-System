@@ -1,17 +1,23 @@
 import base64
 import cv2
 from datetime import datetime
+import face_recognition as fr
+import face_recognition
 import numpy as np
+import os
 
 
 class Camera:
 
     cap = None
+    motion_frame = None
     last_frame = None
     frame = None
-    motion_frame = None
     frame_timestamp = None
     is_different = None
+
+###########################################################################
+# constructor method
 
     def __init__(self, camera_port):
         self.camera_port = camera_port
@@ -20,9 +26,25 @@ class Camera:
         self.cap.set(3, 320)
         self.cap.set(4, 240)
 
+###########################################################################
+# frame methods
+
     def capture_frame(self):
         ret, self.frame = self.cap.read()
         self.frame_timestamp = datetime.now()
+
+    def send_frame(self, client_socket):
+        result, self.frame = cv2.imencode('.jpg', self.frame)
+        data = base64.b64encode(self.frame)  # convert to base64 format
+        print('Sending capture: ' + self.frame_timestamp.__str__())
+        client_socket.emit('data', data)
+
+    @staticmethod
+    def store_frame():
+        print("STORING FRAME")
+
+###########################################################################
+# AI analysis methods
 
     def motion_detector(self):
         # load motion_frame from frame
@@ -63,12 +85,48 @@ class Camera:
         else:
             return False
 
-    def send_frame(self, client_socket):
-        result, self.frame = cv2.imencode('.jpg', self.frame)
-        data = base64.b64encode(self.frame)  # convert to base64 format
-        print('Sending capture: ' + self.frame_timestamp.__str__())
-        client_socket.emit('data', data)
-
     @staticmethod
-    def store_frame():
-        print("STORING FRAME")
+    def get_encoded_faces():
+        encoded = {}
+        for directory_path, directory_names, file_names in os.walk("/Users/spencerkeith/Desktop/School/Spring 2022/CS 355/CS-355-AI-Smart-Security-System/src/client/faces"):
+            for file in file_names:
+                if file.endswith(".jpg") or file.endswith(".png"):
+                    face = fr.load_image_file("/Users/spencerkeith/Desktop/School/Spring 2022/CS 355/CS-355-AI-Smart-Security-System/src/client/faces/" + file)
+                    encoding = fr.face_encodings(face)[0]
+                    encoded[file.split(".")[0]] = encoding
+
+        return encoded
+
+    def classify_face(self):
+        faces = self.get_encoded_faces()
+        faces_encoded = list(faces.values())
+        known_face_names = list(faces.keys())
+
+        # img = cv2.resize(img, (0, 0), fx=0.5, fy=0.5)
+        # img = img[:,:,::-1]
+
+        face_locations = face_recognition.face_locations(self.frame)
+        unknown_face_encodings = face_recognition.face_encodings(self.frame, face_locations)
+
+        face_names = []
+        for face_encoding in unknown_face_encodings:
+            # See if the face is a match for the known face(s)
+            matches = face_recognition.compare_faces(faces_encoded, face_encoding)
+            name = "Unknown"
+
+            # use the known face with the smallest distance to the new face
+            face_distances = face_recognition.face_distance(faces_encoded, face_encoding)
+            best_match_index = np.argmin(face_distances)
+            if matches[best_match_index]:
+                name = known_face_names[best_match_index]
+
+            face_names.append(name)
+
+            for (top, right, bottom, left), name in zip(face_locations, face_names):
+                # Draw a box around the face
+                cv2.rectangle(self.frame, (left - 20, top - 20), (right + 20, bottom + 20), (255, 0, 0), 2)
+
+                # Draw a label with a name below the face
+                cv2.rectangle(self.frame, (left - 20, bottom - 15), (right + 20, bottom + 20), (255, 0, 0), cv2.FILLED)
+                font = cv2.FONT_HERSHEY_DUPLEX
+                cv2.putText(self.frame, name, (left - 20, bottom + 15), font, 1.0, (255, 255, 255), 2)

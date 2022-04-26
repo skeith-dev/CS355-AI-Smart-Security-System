@@ -3,6 +3,7 @@ import time
 from camera import Camera
 
 
+frame_rate = 1
 do_stream = False
 do_store = False
 
@@ -46,8 +47,9 @@ while True:
         cam.capture_frame()
     if do_stream:
         if cam.motion_detector():
+            cam.classify_face()
             cam.send_frame(client_socket)
     if do_store:
         cam.store_frame()
 
-    time.sleep(1)
+    time.sleep(frame_rate)
