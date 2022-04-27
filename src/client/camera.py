@@ -15,6 +15,8 @@ class Camera:
     frame = None
     frame_timestamp = None
     is_different = None
+    faces_encoded = None
+    known_face_names = None
 
 ###########################################################################
 # constructor method
@@ -85,8 +87,7 @@ class Camera:
         else:
             return False
 
-    @staticmethod
-    def get_encoded_faces():
+    def get_encoded_faces(self):
         encoded = {}
         for directory_path, directory_names, file_names in os.walk("/Users/spencerkeith/Desktop/School/Spring 2022/CS 355/CS-355-AI-Smart-Security-System/src/client/faces"):
             for file in file_names:
@@ -95,30 +96,24 @@ class Camera:
                     encoding = fr.face_encodings(face)[0]
                     encoded[file.split(".")[0]] = encoding
 
-        return encoded
+        self.faces_encoded = list(encoded.values())
+        self.known_face_names = list(encoded.keys())
 
     def classify_face(self):
-        faces = self.get_encoded_faces()
-        faces_encoded = list(faces.values())
-        known_face_names = list(faces.keys())
-
-        # img = cv2.resize(img, (0, 0), fx=0.5, fy=0.5)
-        # img = img[:,:,::-1]
-
         face_locations = face_recognition.face_locations(self.frame)
         unknown_face_encodings = face_recognition.face_encodings(self.frame, face_locations)
 
         face_names = []
         for face_encoding in unknown_face_encodings:
             # See if the face is a match for the known face(s)
-            matches = face_recognition.compare_faces(faces_encoded, face_encoding)
+            matches = face_recognition.compare_faces(self.faces_encoded, face_encoding)
             name = "Unknown"
 
             # use the known face with the smallest distance to the new face
-            face_distances = face_recognition.face_distance(faces_encoded, face_encoding)
+            face_distances = face_recognition.face_distance(self.faces_encoded, face_encoding)
             best_match_index = np.argmin(face_distances)
             if matches[best_match_index]:
-                name = known_face_names[best_match_index]
+                name = self.known_face_names[best_match_index]
 
             face_names.append(name)
 

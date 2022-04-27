@@ -3,7 +3,7 @@ import time
 from camera import Camera
 
 
-frame_rate = 1
+frame_rate = 0.5
 do_stream = False
 do_store = False
 
@@ -39,9 +39,23 @@ def stop_store():
     do_store = False
 
 
+@client_socket.on('refresh_face_cache')
+def refresh_faces():
+    cam.get_encoded_faces()
+    print('Successfully refreshed face cache!')
+
+
+@client_socket.on('change_frame_rate')
+def set_frame_rate(data):
+    global frame_rate
+    print('Setting frame rate...')
+    frame_rate = data
+
+
 client_socket.connect(url)
 cam = Camera(0)
 
+cam.get_encoded_faces()
 while True:
     if do_stream or do_store:
         cam.capture_frame()
