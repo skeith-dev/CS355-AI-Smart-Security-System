@@ -13,6 +13,7 @@ class Camera:
     motion_frame = None
     last_frame = None
     frame = None
+    frame_binary = None
     frame_timestamp = None
     is_different = None
     faces_encoded = None
@@ -34,16 +35,13 @@ class Camera:
     def capture_frame(self):
         ret, self.frame = self.cap.read()
         self.frame_timestamp = datetime.now()
+        self.frame_binary = cv2.imencode('.jpg', self.frame)[1].tobytes()
 
     def send_frame(self, client_socket):
         result, self.frame = cv2.imencode('.jpg', self.frame)
         data = base64.b64encode(self.frame)  # convert to base64 format
         print('Sending capture: ' + self.frame_timestamp.__str__())
         client_socket.emit('data', data)
-
-    @staticmethod
-    def store_frame():
-        print("STORING FRAME")
 
 ###########################################################################
 # AI analysis methods

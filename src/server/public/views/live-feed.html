@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+
+<html>
+
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" contents="width=device-width, initial-scale=1.0" />
+    <title>Raspberry PI Home Security</title>
+    <link rel="stylesheet" href="tabs.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;600;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <style>
+    .group{
+      display:grid;
+      position:absolute;
+      box-sizing: border-box;
+    }
+    img{
+      width:80%;
+      margin-left:140px;
+      height:90%;
+      border-radius: 30px;
+    }
+
+    .text-box{
+      position:relative;
+      margin-top:20px;
+      
+    }
+  </style>
+  <body>
+    <section class="header"></section>
+
+    <nav>
+      <div class="nav-links">
+        <ul>
+          <li><a href="Home.html">Home</a></li>
+          <li><a href="LiveFeed.html">Live Feed</a></li>
+          <li><a href="PastFeed.html">Past Feed</a></li>
+          <li><a href="Settings.html">Settings</a></li>
+          <li><a href="index.html">Log Out</a></li>
+        </ul>
+      </div>
+    </nav>
+
+    <div class = "group">
+      <div class="text-box">
+       <h1>Live Feed</h1>
+        <p>See what is going on while you are away.</p>
+      </div>
+      <!-- delete the portion (img src= "puppy.jpeg" alt="puppy") when ready! -->
+        <img id = "image" img src="puppy.jpeg" alt="puppy">
+    </div>
+          
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.4.1/socket.io.js"></script>
+        <script>
+            var socket = io.connect("localhost:5000", {transports: ['websocket']});
+            socket.on('image', (image) => {
+                const imageElement = document.getElementById('image');
+                imageElement.src = `data:image/jpeg;base64,${image}`;
+            })
+        </script>
+  </body>
+  
+</html>
+
+<script>
+    function myIndex() {
+    window.location.href = "index.html";
+}
+</script>
