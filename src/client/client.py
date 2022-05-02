@@ -106,7 +106,6 @@ while True:
                 if do_store:
                     db_conn.insert_new_footage(cam.frame_binary)
         else:
-            cam.capture_frame()
             if do_facial_recognition:
                 cam.classify_face()
             if do_stream:
