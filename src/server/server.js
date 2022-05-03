@@ -66,40 +66,46 @@ db.connect((err) => {
 //*****//*****//*****//*****//*****//*****//*****//*****//*****//*****//*****//*****//
 
 
-app.use(express.static('public/views'));
-app.use('/static', express.static('public/views'));
+app.use(express.static('views'));
+app.use('/static', express.static('views'));
+
+app.set('view engine', 'ejs');
 
 //main (default) website path
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public/views', 'index.html'));
+    res.sendFile(path.join(__dirname, 'views', 'index.html'));
 });
 
 app.get('/home', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public/views', 'home.html'));
+    res.sendFile(path.join(__dirname, 'views', 'home.html'));
 });
 
 app.get('/register', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public/views', 'register.html'));
+    res.sendFile(path.join(__dirname, 'views', 'register.html'));
 });
 
 app.get('/login', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public/views', 'login.html'));
+    res.sendFile(path.join(__dirname, 'views', 'login.html'));
 });
 
 app.get('/log-out', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public/views', 'log-out.html'));
+    res.sendFile(path.join(__dirname, 'views', 'log-out.html'));
 });
 
 app.get('/change-password', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public/views', 'change-password.html'));
+    res.sendFile(path.join(__dirname, 'views', 'change-password.html'));
 });
 
 app.get('/live', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public/views', 'live-feed.html'))
+    res.sendFile(path.join(__dirname, 'views', 'live-feed.html'));
+});
+
+app.get('/past-feed', (req, res) => {
+    res.sendFile(path.join(__dirname, 'views', 'past-feed.html'));
 });
 
 app.get('/settings', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public/views', 'settings.html'));
+    res.sendFile(path.join(__dirname, 'views', 'settings.html'));
 });
 
 
