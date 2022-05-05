@@ -1,7 +1,6 @@
 const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
-app.use(bodyParser.urlencoded({ extended: false }));
 const http = require('http').createServer(app);
 const io = require('socket.io')(http);
 const fs = require('fs');
@@ -66,10 +65,11 @@ db.connect((err) => {
 //*****//*****//*****//*****//*****//*****//*****//*****//*****//*****//*****//*****//
 
 
+app.set('view engine', 'ejs');
+app.use(bodyParser.urlencoded({ extended: false }));
+
 app.use(express.static('views'));
 app.use('/static', express.static('views'));
-
-app.set('view engine', 'ejs');
 
 //main (default) website path
 app.get('/', (req, res) => {
@@ -101,7 +101,11 @@ app.get('/live', (req, res) => {
 });
 
 app.get('/past-feed', (req, res) => {
-    res.sendFile(path.join(__dirname, 'views', 'past-feed.html'));
+    db.query('SELECT footage_ID, account_ID, time_stamp FROM footage', function(err, result) {
+        if(err) throw err;
+        res.render('past-feed', { data: result});
+        console.log(result);
+    });
 });
 
 app.get('/settings', (req, res) => {
