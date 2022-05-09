@@ -33,10 +33,19 @@
       </div>
     </nav>
 
-    <div class="text-box">
-      <h1>Settings</h1>
-      <p>Email address: bourgeem0976@uwec.edu</p>
+    <h1 class="text-box">Settings</h1>
+    <div class="flex-container">
+      <div class="flex-child">
+        <p>First name: <%= user.first_name %></p>
+        <p>Last name: <%= user.last_name %></p>
+      </div>
+      <div class="flex-child">
+        <p>Email address: <%= user.email %></p>
+        <p>Username: <%= user.username %></p>
+        <p>Password: <%= user.password %></p>
+      </div>
     </div>
+    
   </body>
 </html>
 

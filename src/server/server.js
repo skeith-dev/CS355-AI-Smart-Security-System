@@ -149,13 +149,14 @@ app.get('/live', checkAuthenticated, (req, res) => {
 app.get('/past-feed', checkAuthenticated, (req, res) => {
     db.query('SELECT footage_ID, user_ID, time_stamp FROM footage WHERE user_ID = ' + req.user.user_ID, function(err, result) {
         if(err) throw err;
-        res.render('past-feed', { data: result});
+        res.render('past-feed', { data: result });
         console.log(result);
     });
 });
 
 app.get('/settings', checkAuthenticated, (req, res) => {
-    res.sendFile(path.join(__dirname, 'views', 'settings.html'));
+    res.render('settings', { user: req.user });
+    console.log(req.user);
 });
 
 
