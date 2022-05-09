@@ -47,8 +47,8 @@ class DBConnector:
         return results
 
     def insert_new_footage(self, image_binary):
-        statement = "INSERT INTO footage (account_ID, time_stamp, footage) VALUES (%s, %s, %s)"
-        values = (1, time.strftime('%Y-%m-%d %H:%M:%S'), image_binary)
+        statement = "INSERT INTO footage (user_ID, time_stamp, capture) VALUES (%s, %s, %s)"
+        values = (3, time.strftime('%Y-%m-%d %H:%M:%S'), image_binary)
         self.cursor.execute(statement, values)
         self.connection.commit()
         print('Saving capture: ' + datetime.now().__str__())

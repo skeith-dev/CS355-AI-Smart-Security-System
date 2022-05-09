@@ -1,4 +1,5 @@
 <html>
+  
   <head>
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
@@ -18,28 +19,52 @@
         <div class="inner-box" id="card">
           <div class="card-front">
             <h3>Register</h3>
-            <form>
+
+            <form action="/register" method="POST">
               <input
                 type="text"
                 class="input-box"
-                placeholder="Enter Your Name"
+                placeholder="Enter your first name"
+                id="first_name"
+                name="first_name"
+                required
+              />
+              <input
+                type="text"
+                class="input-box"
+                placeholder="Enter your last name"
+                id="last_name"
+                name="last_name"
                 required
               />
               <input
                 type="email"
                 class="input-box"
-                placeholder="Enter Email Address"
+                placeholder="Enter email address"
+                id="email"
+                name="email"
+                required
+              />
+              <input
+                type="text"
+                class="input-box"
+                placeholder="Enter username"
+                id="username"
+                name="username"
                 required
               />
               <input
                 type="password"
                 class="input-box"
-                placeholder="Enter Password"
+                placeholder="Enter password"
+                id="password"
+                name="password"
                 required
               />
-              <button type="Submit" class="submit-btn">Submit</button>
+              <button type="submit" class="submit-btn">Submit</button>
               <input type="checkbox" /><span>Remember Me</span>
             </form>
+
             <button type="button" class="btn" onclick="myFunction()">
               I Have An Account
             </button>

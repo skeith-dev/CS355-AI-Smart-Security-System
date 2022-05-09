@@ -18,24 +18,30 @@
         <div class="inner-box" id="card">
           <div class="card-front">
             <h2>Log In</h2>
-            <form>
+
+            <form action="/login" method="POST">
               <input
-                type="email"
+                type="username"
                 class="input-box"
-                placeholder="Enter Email Address"
-                
+                placeholder="Enter username"
+                id="username"
+                name="username"
+                required
               />
               <input
                 type="password"
                 class="input-box"
-                placeholder="Enter Password"
-              
+                placeholder="Enter password"
+                id="password"
+                name="password"
+                required
               />
-              <button type="button" class="btn" onclick="Mysubmit()">
+              <button type="submit" class="btn" onclick="Mysubmit()">
                 Submit
             </button>
               <input type="checkbox" /><span>Remember Me</span>
             </form>
+
             <button type="button" class="btn" onclick="myFunction()">
               I Want To Join!
             </button>

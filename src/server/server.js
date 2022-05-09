@@ -5,8 +5,14 @@ const http = require('http').createServer(app);
 const io = require('socket.io')(http);
 const fs = require('fs');
 const mysql = require('mysql2');
+const passport = require('passport');
+const flash = require('express-flash');
+const session = require('express-session');
+const methodOverride = require('method-override');
 const { unescape, escape } = require('querystring');
 const path = require('path');
+
+const initializePassport = require('./passport-config');
 
 
 //*****//*****//*****//*****//*****//*****//*****//*****//*****//*****//*****//*****//
@@ -35,7 +41,7 @@ io.on('connection', function (client) {
 
 
 //*****//*****//*****//*****//*****//*****//*****//*****//*****//*****//*****//*****//
-//*****//       web sockets setup ▲ ▲ ▲     database connection setup ▼ ▼ ▼
+//*****//       web sockets setup ▲ ▲ ▲     database setup ▼ ▼ ▼
 //*****//*****//*****//*****//*****//*****//*****//*****//*****//*****//*****//*****//
 
 
@@ -61,60 +67,120 @@ db.connect((err) => {
 
 
 //*****//*****//*****//*****//*****//*****//*****//*****//*****//*****//*****//*****//
-//*****//       database connection setup ▲ ▲ ▲           paths specification ▼ ▼ ▼
+//*****//       database connection setup ▲ ▲ ▲           web server setup ▼ ▼ ▼
 //*****//*****//*****//*****//*****//*****//*****//*****//*****//*****//*****//*****//
 
 
 app.set('view engine', 'ejs');
+
+initializePassport(db, passport);
+
 app.use(bodyParser.urlencoded({ extended: false }));
+app.use(flash());
+app.use(session({
+    secret: 'CS-355-AI-Smart-Security-System',
+    resave: false,
+    saveUninitialized: false
+}));
+app.use(passport.initialize());
+app.use(passport.session());
+app.use(methodOverride('_method'));
 
 app.use(express.static('views'));
 app.use('/static', express.static('views'));
+
+
+//*****//*****//*****//*****//*****//*****//*****//*****//*****//*****//*****//*****//
+//*****//       web server setup ▲ ▲ ▲      paths specification ▼ ▼ ▼
+//*****//*****//*****//*****//*****//*****//*****//*****//*****//*****//*****//*****//
+
 
 //main (default) website path
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'views', 'index.html'));
 });
 
-app.get('/home', (req, res) => {
+app.get('/home', checkAuthenticated, (req, res) => {
     res.sendFile(path.join(__dirname, 'views', 'home.html'));
 });
 
-app.get('/register', (req, res) => {
+app.post('/register', checkNotAuthenticated, async (req, res) => {
+
+    try {
+        var sql = 'INSERT INTO users (email, username, password, first_name, last_name) VALUES (?, ?, ?, ?, ?)';
+        db.query(sql, [req.body.email, req.body.username, req.body.password, req.body.first_name, req.body.last_name], (err, rows) => {
+            if(err) throw err;
+            console.log('New tuple inserted successfully!');
+        });
+        res.redirect('/login');
+    } catch {
+        res.redirect('/register');
+    }
+
+});
+
+app.get('/register', checkNotAuthenticated, (req, res) => {
     res.sendFile(path.join(__dirname, 'views', 'register.html'));
 });
 
-app.get('/login', (req, res) => {
+app.post('/login', checkNotAuthenticated, passport.authenticate('local', {
+    successRedirect: '/home',
+    failureRedirect: '/login',
+    failureFlash: true
+}));
+
+app.get('/login', checkNotAuthenticated, (req, res) => {
     res.sendFile(path.join(__dirname, 'views', 'login.html'));
 });
 
-app.get('/log-out', (req, res) => {
-    res.sendFile(path.join(__dirname, 'views', 'log-out.html'));
+app.delete('/logout', (req, res) => {
+    req.logOut();
+    res.redirect('/');
 });
 
-app.get('/change-password', (req, res) => {
+app.get('/change-password', checkAuthenticated, (req, res) => {
     res.sendFile(path.join(__dirname, 'views', 'change-password.html'));
 });
 
-app.get('/live', (req, res) => {
+app.get('/live', checkAuthenticated, (req, res) => {
     res.sendFile(path.join(__dirname, 'views', 'live-feed.html'));
 });
 
-app.get('/past-feed', (req, res) => {
-    db.query('SELECT footage_ID, account_ID, time_stamp FROM footage', function(err, result) {
+app.get('/past-feed', checkAuthenticated, (req, res) => {
+    db.query('SELECT footage_ID, user_ID, time_stamp FROM footage WHERE user_ID = ' + req.user.user_ID, function(err, result) {
         if(err) throw err;
         res.render('past-feed', { data: result});
         console.log(result);
     });
 });
 
-app.get('/settings', (req, res) => {
+app.get('/settings', checkAuthenticated, (req, res) => {
     res.sendFile(path.join(__dirname, 'views', 'settings.html'));
 });
 
 
 //*****//*****//*****//*****//*****//*****//*****//*****//*****//*****//*****//*****//
-//*****//       web server setup ▲ ▲ ▲      UTF-8 encode/decode functions ▼ ▼ ▼
+//*****//       paths specification ▲ ▲ ▲          authentication ▼ ▼ ▼
+//*****//*****//*****//*****//*****//*****//*****//*****//*****//*****//*****//*****//
+
+
+function checkAuthenticated(req, res, next) {
+    if(req.isAuthenticated()) {
+        return next();
+    }
+    res.redirect('/login');
+}
+
+function checkNotAuthenticated(req, res, next) {
+    if(req.isAuthenticated()) {
+      return res.redirect('/home');
+    }
+    next();
+}
+
+
+//*****//*****//*****//*****//*****//*****//*****//*****//*****//*****//*****//*****//
+//*****//       authentication ▲ ▲ ▲        UTF-8 encode/decode functions ▼ ▼ ▼
 //*****//*****//*****//*****//*****//*****//*****//*****//*****//*****//*****//*****//
 
 

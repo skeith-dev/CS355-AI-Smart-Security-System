@@ -44,11 +44,15 @@
     <nav>
       <div class="nav-links">
         <ul>
-          <li><a href="home.html">Home</a></li>
-          <li><a href="live-feed.html">Live Feed</a></li>
-          <li><a href="past-feed.html">Past Feed</a></li>
-          <li><a href="settings.html">Settings</a></li>
-          <li><a href="index.html">Log Out</a></li>
+          <li><a href="/home">Home</a></li>
+          <li><a href="/live">Live Feed</a></li>
+          <li><a href="/past-feed">Past Feed</a></li>
+          <li><a href="/settings">Settings</a></li>
+          <li>
+            <form action="/logout?_method=DELETE" method="POST">
+              <button type="submit" class="hero-btn">Logout</button>
+            </form>
+          </li>
           <!-- <li style="color: white" onclick="myIndex()">Log Out</li> -->
         </ul>
       </div>
@@ -63,7 +67,7 @@
       <table>
         <tr>
           <th>Footage ID</th>
-          <th>Account ID</th>
+          <th>User ID</th>
           <th>Time Stamp</th>
         </tr>
 
@@ -74,7 +78,7 @@
         %>
         <tr>
           <td><%= tuple.footage_ID %></td>
-          <td><%= tuple.account_ID %></td>
+          <td><%= tuple.user_ID %></td>
           <td><%= tuple.time_stamp %></td>
         </tr>
         <% i++; }) %>
