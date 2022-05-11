@@ -67,8 +67,8 @@
       <table>
         <tr>
           <th>Footage ID</th>
-          <th>User ID</th>
           <th>Time Stamp</th>
+          <th>Access link</th>
         </tr>
 
         <%
@@ -78,8 +78,8 @@
         %>
         <tr>
           <td><%= tuple.footage_ID %></td>
-          <td><%= tuple.user_ID %></td>
           <td><%= tuple.time_stamp %></td>
+          <td><a href="/capture/<%= tuple.footage_ID %>">Download capture</a></td>
         </tr>
         <% i++; }) %>
         <% } else { %>

@@ -3,7 +3,6 @@ const app = express();
 const bodyParser = require('body-parser');
 const http = require('http').createServer(app);
 const io = require('socket.io')(http);
-const fs = require('fs');
 const mysql = require('mysql2');
 const passport = require('passport');
 const flash = require('express-flash');
@@ -147,16 +146,38 @@ app.get('/live', checkAuthenticated, (req, res) => {
 });
 
 app.get('/past-feed', checkAuthenticated, (req, res) => {
+
     db.query('SELECT footage_ID, user_ID, time_stamp FROM footage WHERE user_ID = ' + req.user.user_ID, function(err, result) {
         if(err) throw err;
         res.render('past-feed', { data: result });
         console.log(result);
     });
+
 });
 
 app.get('/settings', checkAuthenticated, (req, res) => {
     res.render('settings', { user: req.user });
     console.log(req.user);
+});
+
+//I strongly dislike this function... >:(
+app.get('/capture/:footage_ID', checkAuthenticated, (req, res, next) => {
+
+    const footage_ID = req.params['footage_ID'];
+    console.log('Footage ID = ' + footage_ID);
+
+    db.query('SELECT capture FROM footage WHERE footage_ID = ' + footage_ID, function(err, result) {
+        if(err) throw err;
+
+        var [footageTuple] = result;
+
+        var capture = footageTuple.capture;
+        console.log(capture);
+
+        res.send(capture);
+        next();
+    });
+    
 });
 
 
